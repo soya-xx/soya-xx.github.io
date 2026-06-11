@@ -207,18 +207,6 @@ main{position:relative;z-index:2}
 body.ura .btn-solid{color:#16060b}
 .btn-ghost{border:1.5px solid var(--line);color:var(--ink)}
 .btn-ghost:hover{border-color:var(--pink);color:var(--pink)}
-.btn-game{
-  background:linear-gradient(135deg,var(--gold) 0%,var(--mint) 100%);
-  color:#3a2a10;font-weight:700;letter-spacing:.06em;
-  box-shadow:0 10px 28px -10px rgba(233,201,146,.5);
-}
-.btn-game:hover{box-shadow:0 14px 32px -10px rgba(233,201,146,.7);}
-body.ura .btn-game{
-  background:linear-gradient(135deg,#ff2e55 0%,#c2183d 100%);
-  color:#fff;box-shadow:0 10px 28px -10px rgba(255,46,85,.45);
-}
-body.ura .btn-game:hover{box-shadow:0 14px 32px -10px rgba(255,46,85,.7);}
-.hero-cta-game{margin-top:4px;}
 
 /* ── hero ───────────────────────────────────────────────── */
 .hero{
