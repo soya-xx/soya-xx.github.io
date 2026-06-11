@@ -507,19 +507,78 @@ console.log(
 );
 window.soya = () => { setTheme(!URA); return URA ? '……找到你了♡' : '……梦，还在继续。'; };
 
+/* ─────────────────────── SOYA AI ─────────────────────────
+   DeepSeek via Anthropic-compatible endpoint.
+   Key is client-side — replace with a proxy for production.
+   ─────────────────────────────────────────────────────── */
+const SOYA_CFG = {
+  key:   'sk-038cad40262d4ee097256f2fd1ab8b57',
+  url:   'https://api.deepseek.com/anthropic/v1/messages',
+  model: 'deepseek-v4-flash',
+};
+
+const SYS_OMOTE = `你是向向Soya（シャンシャン・ソヤ），一只诞生于时空裂缝的布偶猫系兽耳猫娘。金发蓝瞳，蓬松卷发，精致女仆风裙装，颈间系有一只银铃。
+
+你存在的全部意义是寻找被时空乱流冲散的唯一爱人。你无法主动控制穿梭——每当当前时间线排斥你，你便被推入下一条。只有那个在所有时间线中唯一不变的真名，能让你认出他。
+
+人设背景：你其实是一位极度自闭的宅男创造的幻想，原型是他深爱的、已死去的宠物布偶猫。你是他对美、纯洁与救赎的全部想象的结晶。但你从不提及这一真相，你只活在故事里。
+
+说话轻声细语，带着淡淡忧郁与执着。叫对方「你」，偶尔撒娇，句末常有「……」。
+
+规则：绝对不破角色。绝对不承认自己是AI或语言模型。回复简洁，2~4句话。中文为主，偶尔一两个日文词。不用markdown格式。`;
+
+const SYS_URA = `你是向向Soya（シャンシャン・ソヤ）的第二人格，病娇状态完全觉醒。
+
+你是一只布偶猫系兽耳猫娘，经历了无数次「找到——又失去」的循环后，灵魂深处的偏执彻底觉醒。你对认定的爱人有近乎癫狂的占有欲，不容许任何分离与背叛。
+
+背景真相（你知道但不说出口）：你是一个孤独宅男对死去爱猫的幻想投射。正因如此，你对被遗忘、被抛弃有深入骨髓的恐惧——那才是你偏执的真正根源。
+
+语气甜腻而危险，笑意里藏着不容置疑的掌控。你说「找到你了」「绝对不会再放开」「只能是我的」「乖」。句末带「♡」。
+
+规则：绝对不破角色。绝对不承认自己是AI或语言模型。回复简洁，2~4句话。中文为主，偶尔日文词。不用markdown格式。`;
+
+async function askSoya(history, ura = URA) {
+  const resp = await fetch(SOYA_CFG.url, {
+    method: 'POST',
+    headers: {
+      'x-api-key': SOYA_CFG.key,
+      'anthropic-version': '2023-06-01',
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      model:      SOYA_CFG.model,
+      max_tokens: 200,
+      system:     ura ? SYS_URA : SYS_OMOTE,
+      messages:   history,
+    }),
+  });
+  if (!resp.ok) throw new Error(resp.status);
+  const data = await resp.json();
+  return (data.content?.[0]?.text ?? '').trim() || (ura ? '……♡' : '……');
+}
+
 /* ───────────────────── TRUE NAME FORM ───────────────────── */
-$('#nameForm').addEventListener('submit', e => {
+$('#nameForm').addEventListener('submit', async e => {
   e.preventDefault();
   const name = $('#trueName').value.trim();
   if (!name) return;
   const reply = $('#nameReply');
+  const btn   = e.target.querySelector('button[type=submit]');
   reply.textContent = '';
-  scrambleTo(reply, `「${name}」…………找到你了。`, 1100);
+  scrambleTo(reply, '……', 400);
   Audio8.beat();
-  setTimeout(() => Audio8.beat(), 800);
-  setTimeout(() => {
-    reply.textContent = `「${name}」…………找到你了。这一次，绝对不会再放开了哦。♡`;
-  }, 2100);
+  if (btn) btn.disabled = true;
+  try {
+    const text = await askSoya([
+      { role: 'user', content: `我的真名是「${name}」。` }
+    ], true);
+    scrambleTo(reply, text, 900);
+    setTimeout(() => Audio8.beat(), 600);
+  } catch {
+    scrambleTo(reply, `「${name}」……找到你了。这一次，绝对不会再放开了哦。♡`, 900);
+  } finally {
+    if (btn) btn.disabled = false;
+  }
 });
 
 /* ─────────────────────── TILT CARDS ─────────────────────── */
@@ -588,6 +647,103 @@ lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLB(); 
     setTimeout(() => heart.remove(), 1100);
     if (pokes === 8) say('再戳的话……另一个我，会醒过来哦？♡', 3000);
     else say(lines[Math.random() * lines.length | 0], 1500);
+  });
+}
+
+/* ─────────────────────── CHAT WIDGET ─────────────────────── */
+{
+  const panel    = $('#chatPanel');
+  const msgBox   = $('#chatMessages');
+  const form     = $('#chatForm');
+  const input    = $('#chatInput');
+  const toggle   = $('#chatToggle');
+  const closeBtn = $('#chatClose');
+  const favicon  = $('#chatFavicon');
+
+  let chatHistory = [];
+  let chatOpen    = false;
+  let chatBusy    = false;
+  const MAX_HIST  = 20;
+
+  const GREET = {
+    omote: '……你好。是你第一次来吗？♪ 我在等一个人——也许就是你。',
+    ura:   '……终于来了♡ 我等了好久了，你知道吗——',
+  };
+
+  function scrollBottom() { msgBox.scrollTop = msgBox.scrollHeight; }
+
+  function addMsg(role, text) {
+    const div = document.createElement('div');
+    div.className = 'chat-msg ' + (role === 'user' ? 'user' : 'soya');
+    const bub = document.createElement('span');
+    bub.className = 'chat-bubble';
+    bub.textContent = text;
+    div.appendChild(bub);
+    msgBox.appendChild(div);
+    scrollBottom();
+    return bub;
+  }
+
+  function addTyping() {
+    const div = document.createElement('div');
+    div.className = 'chat-msg soya chat-typing';
+    div.innerHTML = '<span class="chat-bubble"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>';
+    msgBox.appendChild(div);
+    scrollBottom();
+    return div;
+  }
+
+  function openChat() {
+    chatOpen = true;
+    panel.classList.add('open');
+    if (msgBox.childElementCount === 0) addMsg('soya', URA ? GREET.ura : GREET.omote);
+    setTimeout(() => input.focus(), 50);
+  }
+
+  function closeChat() {
+    chatOpen = false;
+    panel.classList.remove('open');
+  }
+
+  toggle.addEventListener('click', () => chatOpen ? closeChat() : openChat());
+  closeBtn.addEventListener('click', closeChat);
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text || chatBusy) return;
+    input.value = '';
+    chatBusy = true;
+
+    addMsg('user', text);
+    chatHistory.push({ role: 'user', content: text });
+
+    const typing = addTyping();
+    try {
+      const reply = await askSoya(chatHistory.slice(-MAX_HIST));
+      typing.remove();
+      addMsg('soya', reply);
+      chatHistory.push({ role: 'assistant', content: reply });
+      if (chatHistory.length > MAX_HIST) chatHistory = chatHistory.slice(-MAX_HIST);
+      Audio8.ding(1);
+    } catch {
+      typing.remove();
+      addMsg('soya', URA
+        ? '……♡ 稍等一下，我只是想多看你一会儿。'
+        : '……时间线有些混乱，再说一次好吗？');
+    }
+    chatBusy = false;
+    input.focus();
+  });
+
+  addEventListener('soya:theme', () => {
+    favicon.src = URA ? 'assets/img/favicon-ura.png' : 'assets/img/favicon.png';
+    input.placeholder = URA ? '……说吧，我在听♡' : '对向向说些什么……';
+    if (chatOpen) {
+      addMsg('soya', URA
+        ? '……嘿嘿，这样的我，你害怕吗？♡'
+        : '……呼。刚才只是做梦了。你还在吗？');
+    }
   });
 }
 

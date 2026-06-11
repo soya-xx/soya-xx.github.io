@@ -297,6 +297,32 @@
   <button class="lb-next" aria-label="下一张">›</button>
 </div>
 
+<!-- ════════ CHAT WIDGET ════════ -->
+<div id="chatWidget" class="chat-widget">
+  <button id="chatToggle" class="chat-toggle" aria-label="和向向说话">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+      <path d="M11 2C6.03 2 2 5.69 2 10.2c0 2.36 1.08 4.49 2.82 6.02L4 20l4.12-1.57C9.3 18.8 10.14 19 11 19c4.97 0 9-3.69 9-8.2S15.97 2 11 2z" fill="currentColor"/>
+    </svg>
+  </button>
+  <div id="chatPanel" class="chat-panel">
+    <div class="chat-header">
+      <img src="assets/img/favicon.png" id="chatFavicon" class="chat-avatar" alt="">
+      <div class="chat-header-info">
+        <span class="chat-name" data-omote="向向Soya" data-ura="向向Soya♡">向向Soya</span>
+        <span class="chat-status" data-omote="漂泊于时间线……" data-ura="注视着你">漂泊于时间线……</span>
+      </div>
+      <button id="chatClose" class="chat-close" aria-label="关闭">✕</button>
+    </div>
+    <div id="chatMessages" class="chat-messages"></div>
+    <form id="chatForm" class="chat-form" autocomplete="off">
+      <input id="chatInput" class="chat-input" type="text" placeholder="对向向说些什么……" maxlength="200">
+      <button class="chat-send" type="submit" aria-label="发送">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M2 14L14 8 2 2v4.5l8 1.5-8 1.5z"/></svg>
+      </button>
+    </form>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" defer></script>
 <script src="js/main.js" defer></script>
