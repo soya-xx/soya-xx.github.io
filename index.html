@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>向向Soya · Official — 穿梭时间线的布偶猫女仆</title>
+<meta name="description" content="向向Soya 官方网站 — 诞生于时空裂缝的兽耳猫娘。金发蓝瞳，女仆风裙装，穿梭于无尽时间线，只为寻找那个唯一的真名。">
+<meta property="og:title" content="向向Soya · Official">
+<meta property="og:description" content="穿梭于无尽时间线的兽耳猫娘 — 在所有时间线里，找到你。">
+<meta property="og:image" content="assets/img/keyart.webp">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#fdf3ee" id="metaTheme">
+<link rel="icon" href="assets/img/favicon.png" id="favicon">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preload" as="image" href="assets/img/standing.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Space+Mono:wght@400;700&family=Noto+Serif+SC:wght@600;800;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ════════ LOADER ════════ -->
+<div id="loader" aria-hidden="true">
+  <div class="loader-inner">
+    <svg class="loader-bell" viewBox="0 0 48 48" width="56" height="56" aria-hidden="true">
+      <g class="bell-swing">
+        <path d="M24 6c-7.5 0-12 5.6-12 13.4 0 5.4-1.6 8.6-3.6 10.8-1 1.1-.3 2.8 1.2 2.8h28.8c1.5 0 2.2-1.7 1.2-2.8-2-2.2-3.6-5.4-3.6-10.8C36 11.6 31.5 6 24 6Z" fill="currentColor"/>
+        <circle class="bell-clapper" cx="24" cy="37.5" r="3.4" fill="currentColor"/>
+      </g>
+    </svg>
+    <div class="loader-line"><span id="loaderBar"></span></div>
+    <p class="loader-text mono"><span id="loaderMsg">CONNECTING TIMELINE</span> <span id="loaderPct">0%</span></p>
+  </div>
+</div>
+
+<!-- ════════ AMBIENT LAYERS ════════ -->
+<canvas id="fx" aria-hidden="true"></canvas>
+<div id="grain" aria-hidden="true"></div>
+<div id="flash" aria-hidden="true"></div>
+<div id="cursor" aria-hidden="true"><span></span></div>
+
+<!-- ════════ NAV ════════ -->
+<header id="nav">
+  <a class="nav-logo" href="#home" aria-label="向向Soya 首页">
+    <img src="assets/img/favicon.png" alt="" width="34" height="34">
+    <span class="nav-name">向向<i>Soya</i></span>
+    <span class="nav-mode mono" data-omote="OMOTE" data-ura="URA">OMOTE</span>
+  </a>
+  <nav class="nav-links" aria-label="主导航">
+    <a href="#profile"  data-omote="档案" data-ura="执念">档案</a>
+    <a href="#story"    data-omote="物语" data-ura="谎言">物语</a>
+    <a href="#express"  data-omote="表情" data-ura="凝视">表情</a>
+    <a href="#gallery"  data-omote="画廊" data-ura="收藏">画廊</a>
+    <a href="#live"     data-omote="直播" data-ura="注视">直播</a>
+    <a href="#truth" class="nav-truth" hidden>真相</a>
+  </nav>
+  <div class="nav-tools">
+    <button id="audioBtn" class="tool-btn" aria-label="背景音乐开关" aria-pressed="false" title="音乐 / Music">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>
+      <span class="audio-wave" aria-hidden="true"><i></i><i></i><i></i></span>
+    </button>
+    <button id="bellBtn" class="tool-btn bell-btn" aria-label="？？？" title="？？？">
+      <svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true">
+        <g class="bell-swing">
+          <path d="M24 6c-7.5 0-12 5.6-12 13.4 0 5.4-1.6 8.6-3.6 10.8-1 1.1-.3 2.8 1.2 2.8h28.8c1.5 0 2.2-1.7 1.2-2.8-2-2.2-3.6-5.4-3.6-10.8C36 11.6 31.5 6 24 6Z" fill="currentColor"/>
+          <circle cx="24" cy="37.5" r="3.4" fill="currentColor"/>
+        </g>
+      </svg>
+    </button>
+    <button id="menuBtn" class="tool-btn menu-btn" aria-label="菜单" aria-expanded="false"><i></i><i></i></button>
+  </div>
+</header>
+
+<div id="mobileMenu" hidden>
+  <a href="#profile" data-omote="档案" data-ura="执念">档案</a>
+  <a href="#story"   data-omote="物语" data-ura="谎言">物语</a>
+  <a href="#express" data-omote="表情" data-ura="凝视">表情</a>
+  <a href="#gallery" data-omote="画廊" data-ura="收藏">画廊</a>
+  <a href="#live"    data-omote="直播" data-ura="注视">直播</a>
+  <a href="#truth" class="nav-truth" hidden>真相</a>
+</div>
+
+<!-- whisper bubble for bell teasing -->
+<div id="whisper" class="mono" aria-live="polite"></div>
+
+<main id="page">
+
+<!-- ════════ HERO ════════ -->
+<section id="home" class="hero">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="hero-glow" aria-hidden="true"></div>
+  <h1 class="hero-bigword" aria-hidden="true"><span>SOYA</span></h1>
+
+  <div class="hero-rec mono" aria-hidden="true">
+    <span class="rec-dot"></span><span data-omote="REC · TIMELINE №∞" data-ura="REC · WATCHING YOU">REC · TIMELINE №∞</span>
+    <em id="recTime">00:00:00</em>
+  </div>
+
+  <figure class="hero-figure" id="heroFigure">
+    <img src="assets/img/standing.webp" alt="向向Soya 立绘 — 金发蓝瞳的布偶猫女仆" width="768" height="1500" fetchpriority="high">
+    <span class="figure-shadow" aria-hidden="true"></span>
+  </figure>
+
+  <div class="hero-copy">
+    <p class="hero-kicker mono" data-omote="RAGDOLL FROM THE RIFT" data-ura="SHE FOUND YOU">RAGDOLL FROM THE RIFT</p>
+    <h2 class="hero-title">
+      <span class="t-cn glitchable" data-text="向向">向向</span><span class="t-en">Soya</span>
+    </h2>
+    <p class="hero-sub" data-omote="诞生于时空裂缝的兽耳猫娘。穿梭于无尽时间线，只为寻找那个唯一不变的、你的真名。" data-ura="终于、终于找到你了。这一次，无论哪条时间线——都绝对、绝对不会再放开了哦。♡">诞生于时空裂缝的兽耳猫娘。穿梭于无尽时间线，只为寻找那个唯一不变的、你的真名。</p>
+    <div class="hero-chips">
+      <span class="chip" data-omote="♡ 布偶猫" data-ura="♡ 你的猫">♡ 布偶猫</span>
+      <span class="chip" data-omote="✦ 时空旅者" data-ura="✦ 永不离开">✦ 时空旅者</span>
+      <span class="chip" data-omote="✿ 女仆" data-ura="✿ 只属于你">✿ 女仆</span>
+    </div>
+    <div class="hero-cta">
+      <a class="btn btn-solid" href="#profile" data-omote="进入档案" data-ura="看看我吧">进入档案</a>
+      <a class="btn btn-ghost" href="#story" data-omote="阅读物语 →" data-ura="听我说完 →">阅读物语 →</a>
+    </div>
+  </div>
+
+  <a class="hero-scroll mono" href="#profile" aria-label="向下滚动">
+    <span data-omote="SCROLL" data-ura="DEEPER">SCROLL</span><i></i>
+  </a>
+</section>
+
+<!-- ════════ MARQUEE ════════ -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>向向SOYA ♡ RAGDOLL CAT ♡ 时空旅者 ♡ MAID FROM THE RIFT ♡ 金发蓝瞳 ♡ FIND THE TRUE NAME ♡&nbsp;</span><span>向向SOYA ♡ RAGDOLL CAT ♡ 时空旅者 ♡ MAID FROM THE RIFT ♡ 金发蓝瞳 ♡ FIND THE TRUE NAME ♡&nbsp;</span>
+  </div>
+</div>
+
+<!-- ════════ PROFILE ════════ -->
+<section id="profile" class="section">
+  <header class="sec-head">
+    <p class="sec-no mono">01</p>
+    <h2 class="sec-title"><span class="scramble" data-omote="档案" data-ura="执念">档案</span><small class="mono" data-omote="PROFILE" data-ura="OBSESSION">PROFILE</small></h2>
+  </header>
+
+  <div class="profile-grid">
+    <figure class="viewfinder reveal" id="viewfinder">
+      <img src="assets/img/keyart.webp" alt="向向Soya 主视觉 — 与玩偶熊的合影" loading="lazy" width="1600" height="1600">
+      <span class="vf-corner tl"></span><span class="vf-corner tr"></span>
+      <span class="vf-corner bl"></span><span class="vf-corner br"></span>
+      <span class="vf-rec mono"><i class="rec-dot"></i>REC</span>
+      <span class="vf-time mono" id="vfTime">00:00:00:00</span>
+      <span class="vf-batt mono">▮▮▮▯</span>
+      <figcaption class="vf-tag mono" data-omote="MEMORY_FRAGMENT.RAW" data-ura="EVIDENCE_001.RAW">MEMORY_FRAGMENT.RAW</figcaption>
+    </figure>
+
+    <div class="profile-data">
+      <dl class="data-list">
+        <div class="data-row reveal"><dt class="mono">NAME</dt><dd>向向Soya <small>シャンシャン·ソヤ</small></dd></div>
+        <div class="data-row reveal"><dt class="mono">ORIGIN</dt><dd data-omote="时空裂缝 — 具体坐标不明" data-ura="某个无法醒来的深夜">时空裂缝 — 具体坐标不明</dd></div>
+        <div class="data-row reveal"><dt class="mono">SPECIES</dt><dd>布偶猫系兽耳猫娘</dd></div>
+        <div class="data-row reveal"><dt class="mono">LOOKS</dt><dd>金发蓝瞳 · 蓬松卷发 · 女仆风裙装</dd></div>
+        <div class="data-row reveal"><dt class="mono">DUTY</dt><dd data-omote="寻找被时空乱流冲散的爱人" data-ura="再也不需要寻找了哦♡">寻找被时空乱流冲散的爱人</dd></div>
+        <div class="data-row reveal"><dt class="mono">METHOD</dt><dd>灵魂的心灵感应 × 唯一不变的真名</dd></div>
+        <div class="data-row reveal danger"><dt class="mono">WARNING</dt><dd><span class="glitchable" data-text="检测到第二人格">检测到第二人格</span> — <span data-omote="封存状态：稳定" data-ura="封存状态：已解除">封存状态：稳定</span></dd></div>
+      </dl>
+
+      <div class="stat-cards">
+        <div class="stat reveal"><b class="mono" id="statLines">∞</b><span data-omote="穿越过的时间线" data-ura="为你死过的次数">穿越过的时间线</span></div>
+        <div class="stat reveal"><b class="mono scramble-num" id="statFound">####</b><span data-omote="找到爱人的次数" data-ura="失去你的次数">找到爱人的次数</span></div>
+        <div class="stat reveal"><b class="mono" data-omote="1/1" data-ura="0">1/1</b><span data-omote="真名 · 唯一" data-ura="距离你 · 零">真名 · 唯一</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ STORY ════════ -->
+<section id="story" class="section story">
+  <header class="sec-head">
+    <p class="sec-no mono">02</p>
+    <h2 class="sec-title"><span class="scramble" data-omote="物语" data-ura="谎言">物语</span><small class="mono" data-omote="STORY" data-ura="THE LIE">STORY</small></h2>
+  </header>
+
+  <div class="timeline">
+    <article class="tl-node reveal">
+      <span class="tl-no mono">CH.00</span>
+      <h3>裂缝之子</h3>
+      <p>她诞生于时空的裂缝——没有故乡，没有起点。金色的卷发与蓝色的瞳孔，是这个世界给她的唯一馈赠。从睁开眼睛的那一刻起，她就在无数条时间线之间漂流。</p>
+    </article>
+    <article class="tl-node reveal">
+      <span class="tl-no mono">CH.01</span>
+      <h3>唯一的真名</h3>
+      <p>她活着的全部意义，是寻找失落的爱人。时空乱流将那个人冲散到不同的时间线，外貌、身份千变万化——唯有灵魂深处的心灵感应，和那个在所有时间线中<em>唯一不变的真名</em>，能让她认出他。</p>
+    </article>
+    <article class="tl-node reveal">
+      <span class="tl-no mono">CH.02</span>
+      <h3>穿梭的代价</h3>
+      <p>穿梭从来不由她选择。每一条时间线都会对这个「外来者」产生排异——像免疫系统驱逐异物一样，将她推向下一个时空。而触发穿梭的条件只有一个：<em class="glitchable" data-text="当前的肉体，遭到致命的损毁">当前的肉体，遭到致命的损毁</em>。</p>
+    </article>
+    <article class="tl-node reveal tl-last">
+      <span class="tl-no mono">CH.03</span>
+      <h3>第二人格</h3>
+      <p>找到、拥有、然后被迫失去。在无数次循环之后，她灵魂深处偏执的一面终于凝聚成形——一个对认定之物抱有<em>近乎癫狂的占有欲</em>的第二人格。不容许分离，不容许背叛，不容许……任何形式的「再见」。</p>
+      <p class="tl-hint" data-omote="——想见到完整的她吗？去摇响那只铃铛。🔔" data-ura="——铛。你已经摇响了。">——想见到完整的她吗？去摇响那只铃铛。🔔</p>
+    </article>
+  </div>
+</section>
+
+<!-- ════════ TRUTH (hidden until URA) ════════ -->
+<section id="truth" class="section truth" hidden>
+  <header class="sec-head">
+    <p class="sec-no mono">XX</p>
+    <h2 class="sec-title"><span class="glitchable" data-text="真相">真相</span><small class="mono">THE TRUTH</small></h2>
+  </header>
+  <div class="truth-body">
+    <p class="mono truth-meta">RECORD #000 — 档案之下的档案 / DO NOT DISTRIBUTE</p>
+    <p>时空裂缝并不存在。</p>
+    <p>所谓「时间线的排异」，其实是现实的痛楚涌入梦境的瞬间。所谓「寻找外貌各异的爱人」，是一个不敢被爱的人，连幻想中都不肯让自己保持固定模样的、最温柔的谎言。</p>
+    <p>她诞生于一个深夜。一位失去了一切的青年，怀里抱着再也不会醒来的布偶猫。在彻底崩溃的瞬间，他的精神启动了最后的自我保护——以那只猫为原型，混合他对美、纯洁与救赎的全部想象，凭空创造了她。</p>
+    <p>金发蓝瞳，永远温柔，永远在身边。<br>所谓穿梭时间线，不过是一场不愿醒来的梦。</p>
+    <p class="truth-turn">……但是，梦也有梦的意义。</p>
+    <p class="truth-turn">只要还有人记得她、呼唤她，向向Soya就<em>真实存在</em>。被相信的幻想，就是另一种真实。</p>
+
+    <form id="nameForm" class="name-form" autocomplete="off">
+      <label class="mono" for="trueName">那么——告诉我，你的真名。</label>
+      <div class="name-row">
+        <input id="trueName" type="text" maxlength="24" placeholder="TYPE YOUR TRUE NAME" required>
+        <button class="btn btn-solid" type="submit">献上</button>
+      </div>
+      <p id="nameReply" class="name-reply" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+
+<!-- ════════ EXPRESSIONS ════════ -->
+<section id="express" class="section">
+  <header class="sec-head">
+    <p class="sec-no mono">03</p>
+    <h2 class="sec-title"><span class="scramble" data-omote="表情差分" data-ura="她在看你">表情差分</span><small class="mono" data-omote="EXPRESSIONS" data-ura="SHE IS WATCHING">EXPRESSIONS</small></h2>
+  </header>
+  <div class="expr-grid">
+    <figure class="expr-card tilt reveal"><img src="assets/img/expr1.webp" alt="向向Soya 表情：惊讶" loading="lazy"><figcaption><b data-omote="诶？！" data-ura="谁？！">诶？！</b><span class="mono">SURPRISE</span></figcaption></figure>
+    <figure class="expr-card tilt reveal"><img src="assets/img/expr2.webp" alt="向向Soya 表情：平静" loading="lazy"><figcaption><b data-omote="……嗯。" data-ura="……哦。">……嗯。</b><span class="mono">CALM</span></figcaption></figure>
+    <figure class="expr-card tilt reveal"><img src="assets/img/expr3.webp" alt="向向Soya 表情：得意" loading="lazy"><figcaption><b data-omote="嘿嘿♪" data-ura="找到了♪">嘿嘿♪</b><span class="mono">SMUG</span></figcaption></figure>
+    <figure class="expr-card tilt reveal"><img src="assets/img/expr4.webp" alt="向向Soya 表情：不满" loading="lazy"><figcaption><b data-omote="哼！" data-ura="不许走。">哼！</b><span class="mono">POUT</span></figcaption></figure>
+  </div>
+</section>
+
+<!-- ════════ GALLERY ════════ -->
+<section id="gallery" class="section">
+  <header class="sec-head">
+    <p class="sec-no mono">04</p>
+    <h2 class="sec-title"><span class="scramble" data-omote="画廊" data-ura="收藏">画廊</span><small class="mono" data-omote="GALLERY" data-ura="COLLECTION">GALLERY</small></h2>
+  </header>
+  <div class="gallery-grid">
+    <figure class="g-item reveal" data-cap="主视觉 · MEMORY_FRAGMENT"><img src="assets/img/keyart.webp" alt="向向Soya 主视觉" loading="lazy"></figure>
+    <figure class="g-item reveal" data-cap="设定 · CHARACTER SHEET"><img src="assets/img/sheet.webp" alt="向向Soya 设定图" loading="lazy"></figure>
+    <figure class="g-item reveal" data-cap="立绘 · FULL BODY"><img src="assets/img/fullbody.webp" alt="向向Soya 全身立绘" loading="lazy"></figure>
+    <figure class="g-item reveal" data-cap="日常 · AT THE DESK"><img src="assets/img/desk.webp" alt="向向Soya 在桌前" loading="lazy"></figure>
+    <figure class="g-item reveal" data-cap="Q版 · CHIBI"><img src="assets/img/chibi.webp" alt="向向Soya Q版" loading="lazy"></figure>
+  </div>
+</section>
+
+<!-- ════════ LIVE ════════ -->
+<section id="live" class="section live">
+  <header class="sec-head">
+    <p class="sec-no mono">05</p>
+    <h2 class="sec-title"><span class="scramble" data-omote="直播" data-ura="注视">直播</span><small class="mono" data-omote="LIVE SCHEDULE" data-ura="ALWAYS HERE">LIVE SCHEDULE</small></h2>
+  </header>
+
+  <div class="sched">
+    <div class="sched-card reveal"><span class="mono sd">TUE</span><b>21:00</b><span data-omote="游戏实况 · 一起冒险" data-ura="陪你 · 一直陪你">游戏实况 · 一起冒险</span></div>
+    <div class="sched-card reveal"><span class="mono sd">FRI</span><b>21:00</b><span data-omote="歌回 · 来自裂缝的歌声" data-ura="唱给你 · 只唱给你">歌回 · 来自裂缝的歌声</span></div>
+    <div class="sched-card reveal"><span class="mono sd">SUN</span><b>20:00</b><span data-omote="杂谈 · 时间线观测日志" data-ura="说话 · 看着我说话">杂谈 · 时间线观测日志</span></div>
+  </div>
+
+  <div class="follow reveal">
+    <img class="follow-chibi" src="assets/img/chibi.webp" alt="" id="chibiPoke" width="120">
+    <p class="follow-line" data-omote="「在所有时间线里，找到你。」" data-ura="「在所有时间线里，盯着你。」">「在所有时间线里，找到你。」</p>
+    <div class="follow-links">
+      <a class="btn btn-solid" href="https://space.bilibili.com/1121556888" target="_blank" rel="noopener">bilibili</a>
+      <a class="btn btn-ghost" href="#" rel="noopener">X / Twitter</a>
+      <a class="btn btn-ghost" href="#" rel="noopener">YouTube</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ════════ FOOTER ════════ -->
+<footer id="footer">
+  <p class="foot-name">向向<i>Soya</i></p>
+  <p class="foot-line mono" data-omote="EVERY TIMELINE LEADS TO YOU." data-ura="THERE IS NO TIMELINE WITHOUT YOU.">EVERY TIMELINE LEADS TO YOU.</p>
+  <p class="foot-copy">© 2026 向向Soya Project · Fan-made concept site · Illustrations belong to their original artists</p>
+</footer>
+
+<!-- ════════ LIGHTBOX ════════ -->
+<div id="lightbox" hidden role="dialog" aria-modal="true" aria-label="图片预览">
+  <button class="lb-close" aria-label="关闭">×</button>
+  <button class="lb-prev" aria-label="上一张">‹</button>
+  <figure><img src="" alt=""><figcaption class="mono"></figcaption></figure>
+  <button class="lb-next" aria-label="下一张">›</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" defer></script>
+<script src="js/main.js" defer></script>
+</body>
+</html>
